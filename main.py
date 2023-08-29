@@ -1,36 +1,34 @@
 import asyncio
 import logging
-import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
-from dotenv import load_dotenv
 
-load_dotenv()
+from config import ADMIN_ID, TOKEN
 
-token = os.getenv("TOKEN")
-admin_id = os.getenv("ADMIN_ID")
 
+from core.bot.keyboards.reply import get_main_menu
 from core.youtube.services import check_update, delete_saved_mp3, get_mp3_from_youtube
 
 
 async def get_start(message: Message):
-    await message.answer(f"Привет {message.from_user.full_name}")
+    """Greetings"""
+    await message.answer(f"Привет {message.from_user.full_name}", reply_markup=get_main_menu())
 
 
 async def start_bot(bot: Bot):
-    """Отправка уведомления о старте бота"""
-    await bot.send_message(chat_id=admin_id, text="Бот запущен")
+    """Sending message about start bot"""
+    await bot.send_message(chat_id=ADMIN_ID, text="Бот запущен")
 
 
 async def stop_bot(bot: Bot):
-    """Отправка уведомления об остоновке бота"""
-    await bot.send_message(chat_id=admin_id, text="Бот остановлен")
+    """Sending message about stop bot"""
+    await bot.send_message(chat_id=ADMIN_ID, text="Бот остановлен")
 
 
 async def send_mp3(message: Message, bot: Bot):
-    """Отправка mp3"""
+    """Receiving url and sending mp3"""
     try:
         audio = get_mp3_from_youtube(message.text)
         await bot.send_audio(message.chat.id, audio=audio)
@@ -63,7 +61,7 @@ async def start():
         format="%(asctime)s - [%(levelname)s] - %(name)s - "
         "(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s",
     )
-    bot = Bot(token=token, parse_mode="HTML")
+    bot = Bot(token=TOKEN, parse_mode="HTML")
 
     dp = Dispatcher()
 

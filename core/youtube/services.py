@@ -3,7 +3,7 @@ from datetime import datetime
 
 import scrapetube
 from aiogram.types import FSInputFile
-from pytube import YouTube
+from pytube import YouTube, Channel
 
 channels_list = [
     "https://www.youtube.com/@ITHelpers170",
@@ -15,7 +15,7 @@ video_list = {
 }
 
 
-def get_mp3_from_youtube(url):
+def get_mp3_from_youtube(url: str) -> FSInputFile:
     """Скачивание mp3 файла по ссылке Youtube"""
     yt = YouTube(url)
     video = yt.streams.filter(only_audio=True).first()
@@ -27,7 +27,7 @@ def get_mp3_from_youtube(url):
     return audio
 
 
-def delete_saved_mp3(path):
+def delete_saved_mp3(path: str) -> None:
     """Удаление сохраненного mp3 файла"""
     if os.path.isfile(path):
         os.remove(path)
@@ -36,7 +36,7 @@ def delete_saved_mp3(path):
         print("File doesn't exists!")
 
 
-def check_update(channels_list):
+def check_update(channels_list: list):
     """Проверка обновления в выбранных каналах"""
     for channel in channels_list:
         videos = scrapetube.get_channel(channel_url=channel, limit=1)
@@ -44,3 +44,20 @@ def check_update(channels_list):
         if video_list[channel] != id_last_video:
             video_list[channel] = id_last_video
             return f"https://www.youtube.com/watch?v={video_list[channel]}"
+
+
+def video_data(channel: str) -> dict:
+    data = {}
+    videos = scrapetube.get_channel(channel_url=channel, limit=1)
+    id_last_video = list(videos)[0]["videoId"]
+    data["id_last_video"] = id_last_video
+    full_name = f"https://www.youtube.com/watch?v={id_last_video}"
+    channel_name = YouTube(full_name).author
+    data["channel_name"] = channel_name
+    for part in channel.split("/"):
+        if part.startswith("@"):
+            data["channel_id"] = part
+    return data
+
+
+print(video_data("https://www.youtube.com/@getatru"))

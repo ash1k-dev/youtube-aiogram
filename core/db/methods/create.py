@@ -1,18 +1,27 @@
-from core.db.database import session
 from core.db.models.models import Channel, User
 
+from sqlalchemy.ext.asyncio import AsyncSession
 
-def create_user(user_name, telegram_id):
-    user = User(
-        user_name=user_name,
-        telegram_id=telegram_id,
-    )
+from sqlalchemy import select
+
+
+async def create_user(user_name: str, telegram_id: int, session: AsyncSession) -> None:
+    user = User(user_name=user_name, telegram_id=telegram_id)
     session.add(user)
-    session.commit()
+    await session.commit()
 
 
-def create_chanel(telegram_id, channel_id, channel_name, last_video):
-    user = User.query.filter(User.telegram_id == telegram_id)
+async def create_chanel(
+    telegram_id: int,
+    channel_id: str,
+    channel_name: str,
+    last_video: str,
+    session: AsyncSession,
+) -> None:
+    statement = select(User).where(User.telegram_id == telegram_id)
+    result = await session.execute(statement)
+    user = result.scalars().one_or_none()
+    # user = User.query.filter(User.telegram_id == telegram_id)
     channel = Channel(
         channel_id=channel_id,
         channel_name=channel_name,
@@ -20,4 +29,4 @@ def create_chanel(telegram_id, channel_id, channel_name, last_video):
         user_id=user.id,
     )
     session.add(channel)
-    session.commit()
+    await session.commit()

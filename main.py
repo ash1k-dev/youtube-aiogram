@@ -4,9 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-# from aiogram.fsm.storage.redis import RedisStorage
-
-from config import TOKEN
+from config import TOKEN, DB_URL
 from core.bot.handlers import user
 from core.bot.utils import admin_notification
 
@@ -17,7 +15,9 @@ from core.bot.middlewares.check_authorization import CheckAuthorization
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-from config import DB_URL
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from core.bot.utils.apsheduler import check_video_update
 
 
 async def start():
@@ -33,12 +33,19 @@ async def start():
     bot = Bot(token=TOKEN, parse_mode="HTML")
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
-    dp.message.middleware(LongOperationMiddleware())
-    dp.message.outer_middleware(DbConnection(sessionmaker))
-    dp.edited_message.outer_middleware(DbConnection(sessionmaker))
-    dp.message.middleware(CheckAuthorization(sessionmaker))
 
-    dp.callback_query.middleware(DbConnection(sessionmaker))
+    sheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+    sheduler.add_job(
+        check_video_update,
+        trigger="interval",
+        seconds=30,
+        kwargs={"bot": bot, "sessionmaker": sessionmaker},
+    )
+    sheduler.start()
+
+    dp.message.middleware(LongOperationMiddleware())
+    dp.message.middleware(CheckAuthorization(sessionmaker))
+    dp.update.middleware(DbConnection(sessionmaker))
 
     dp.include_routers(user.router, admin_notification.router)
 

@@ -12,8 +12,13 @@ def get_channels_menu(channels: list) -> InlineKeyboardMarkup:
     return keyboard_builder.as_markup()
 
 
-def get_control_menu(data) -> InlineKeyboardMarkup:
+def get_control_menu(data: str) -> InlineKeyboardMarkup:
     keyboard_builder = InlineKeyboardBuilder()
     keyboard_builder.button(text="Удалить", callback_data=f"delete_{data}")
-    keyboard_builder.button(text="Назад", callback_data="channels")
+    return keyboard_builder.as_markup()
+
+
+def get_new_video_menu(url: str) -> InlineKeyboardMarkup:
+    keyboard_builder = InlineKeyboardBuilder()
+    keyboard_builder.button(text="Конвертировать в MP3", callback_data=f"convert_{url}")
     return keyboard_builder.as_markup()

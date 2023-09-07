@@ -1,12 +1,11 @@
 from typing import Any, Awaitable, Callable, Dict
 
-from aiogram import BaseMiddleware
-from aiogram.types import Message
-
+from aiogram import BaseMiddleware, Bot
 from aiogram.dispatcher.flags import get_flag
+from aiogram.types import Message
 from aiogram.utils.chat_action import ChatActionSender
+
 from config import TOKEN
-from aiogram import Bot
 
 bot = Bot(token=TOKEN, parse_mode="HTML")
 

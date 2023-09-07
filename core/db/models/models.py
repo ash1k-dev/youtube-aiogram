@@ -3,8 +3,6 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
 
-from core.db.database import engine
-
 Base = declarative_base()
 
 
@@ -27,7 +25,7 @@ class Channel(Base):
     __tablename__ = "channels"
 
     id = Column(Integer, primary_key=True)
-    channel_id = Column(Integer, nullable=True, unique=True)
+    channel_id = Column(String, nullable=True, unique=True)
     channel_name = Column(String, nullable=True, unique=True)
     last_video = Column(String, nullable=True, default="")
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -35,8 +33,13 @@ class Channel(Base):
     user = relationship("User", back_populates="channels")
 
     def __repr__(self):
-        return f"{self.__class__.__name__}, steam_id: {self.channel_name}"
+        return f"Channel_id: {self.channel_name}, last video: {self.last_video}"
 
 
-# Base.metadata.create_all(engine)
-# Base.metadata.drop_all(engine)
+# async def init_models():
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.drop_all)
+#         await conn.run_sync(Base.metadata.create_all)
+#
+#
+# asyncio.run(init_models())

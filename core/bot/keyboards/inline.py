@@ -5,9 +5,9 @@ def get_channels_menu(channels: list) -> InlineKeyboardMarkup:
     keyboard_builder = InlineKeyboardBuilder()
     for channel in channels:
         keyboard_builder.button(
-            text=channel.channel_name, callback_data=channel.channel_id
+            text=channel.channel_name, callback_data=f"channel_{channel.channel_name}"
         )
-    keyboard_builder.button(text="Добавить", callback_data="add_channel")
+    keyboard_builder.button(text="Добавить 🪄", callback_data="add_channel")
     keyboard_builder.adjust(1)
     return keyboard_builder.as_markup()
 

@@ -1,7 +1,7 @@
-from core.db.models.models import Channel, User
-
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.db.models.models import Channel, User
 
 
 async def update_last_video(

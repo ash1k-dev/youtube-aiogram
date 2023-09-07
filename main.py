@@ -3,20 +3,14 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-
-from config import TOKEN, DB_URL
-from core.bot.handlers import user
-from core.bot.utils import admin_notification
-
-from core.bot.middlewares.long_operation import LongOperationMiddleware
-from core.bot.middlewares.db_connection import DbConnection
-from core.bot.middlewares.check_authorization import CheckAuthorization
-
-
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-
-
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+from config import DB_URL, TOKEN
+from core.bot.handlers import user
+from core.bot.middlewares.db_connection import DbConnection
+from core.bot.middlewares.long_operation import LongOperationMiddleware
+from core.bot.utils import admin_notification
 from core.bot.utils.apsheduler import check_video_update
 
 
@@ -44,7 +38,6 @@ async def start():
     sheduler.start()
 
     dp.message.middleware(LongOperationMiddleware())
-    dp.message.middleware(CheckAuthorization(sessionmaker))
     dp.update.middleware(DbConnection(sessionmaker))
 
     dp.include_routers(user.router, admin_notification.router)

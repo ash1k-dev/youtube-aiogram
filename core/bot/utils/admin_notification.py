@@ -1,10 +1,8 @@
 from aiogram import Bot, Router
 
+from config import ADMIN_ID
+
 router = Router()
-
-from config import ADMIN_ID, TOKEN
-
-bot = Bot(token=TOKEN, parse_mode="HTML")
 
 
 @router.startup()

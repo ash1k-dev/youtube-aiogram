@@ -1,15 +1,12 @@
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.db.models.models import Channel, User
+from core.db.methods.request import get_channel_from_db
 
 
 async def update_last_video(
-    channel: str, last_video: str, session: AsyncSession
+    channel_name: str, last_video: str, session: AsyncSession
 ) -> None:
-    statement = select(Channel).where(Channel.channel_id == channel)
-    result = await session.execute(statement)
-    channel = result.scalars().one_or_none()
+    channel = await get_channel_from_db(channel_name=channel_name, session=session)
     channel.last_video = last_video
     session.add(channel)
     await session.commit()

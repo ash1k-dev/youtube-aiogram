@@ -10,10 +10,12 @@ from core.bot.keyboards.inline import get_channels_menu, get_control_menu
 from core.bot.keyboards.reply import get_main_menu
 from core.db.methods.create import create_chanel, create_user
 from core.db.methods.delete import delete_channel
-from core.db.methods.request import (get_all_channels_from_db,
-                                     get_channel_from_db, get_user_from_db)
-from core.youtube.services import (delete_saved_mp3, get_mp3_from_youtube,
-                                   get_video_data)
+from core.db.methods.request import (
+    get_all_channels_from_db,
+    check_channel_in_db,
+    get_user_from_db,
+)
+from core.youtube.services import delete_saved_mp3, get_mp3_from_youtube, get_video_data
 
 router = Router()
 
@@ -21,11 +23,12 @@ router = Router()
 @router.message(Command(commands="start"))
 async def get_start(message: Message, session: AsyncSession):
     """Greetings"""
-    result = await get_user_from_db(message=message, session=session)
+    telegram_id = message.from_user.id
+    result = await get_user_from_db(telegram_id=telegram_id, session=session)
     if result is None:
         await create_user(
             user_name=message.from_user.full_name,
-            telegram_id=message.from_user.id,
+            telegram_id=telegram_id,
             session=session,
         )
     await message.answer(
@@ -99,7 +102,7 @@ async def add_channel(message: Message, session: AsyncSession, state: FSMContext
     except Exception:
         await message.answer(text=f"Некорректный адрес канала, попробуйте еще раз")
     else:
-        channel = await get_channel_from_db(
+        channel = await check_channel_in_db(
             channel_url=message.text, telegram_id=message.from_user.id, session=session
         )
         if channel is not None:

@@ -1,7 +1,7 @@
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db.models.models import Channel, User
+from core.db.methods.request import get_user_from_db
 
 
 async def create_user(user_name: str, telegram_id: int, session: AsyncSession) -> None:
@@ -17,9 +17,7 @@ async def create_chanel(
     last_video: str,
     session: AsyncSession,
 ) -> None:
-    statement = select(User).where(User.telegram_id == telegram_id)
-    result = await session.execute(statement)
-    user = result.scalars().one_or_none()
+    user = await get_user_from_db(telegram_id=telegram_id, session=session)
     channel = Channel(
         channel_id=channel_id,
         channel_name=channel_name,

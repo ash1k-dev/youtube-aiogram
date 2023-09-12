@@ -6,6 +6,8 @@ from aiogram.types import Message, TelegramObject
 
 
 class ThrottlingMiddleware(BaseMiddleware):
+    """Spam check"""
+
     def __init__(self, storage: RedisStorage):
         self.storage = storage
 
@@ -21,7 +23,7 @@ class ThrottlingMiddleware(BaseMiddleware):
 
         if check_user:
             if int(check_user.decode()) == 1:
-                await self.storage.redis.set(name=user, value=0, ex=2)
+                await self.storage.redis.set(name=user, value=0, ex=1)
                 return await event.answer(
                     "Мы обнаружили подозрительную активность. Подождите пару секунд."
                 )

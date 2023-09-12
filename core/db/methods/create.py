@@ -5,6 +5,7 @@ from core.db.methods.request import get_user_from_db
 
 
 async def create_user(user_name: str, telegram_id: int, session: AsyncSession) -> None:
+    """Creating user"""
     user = User(user_name=user_name, telegram_id=telegram_id)
     session.add(user)
     await session.commit()
@@ -17,6 +18,7 @@ async def create_chanel(
     last_video: str,
     session: AsyncSession,
 ) -> None:
+    """Creating channel"""
     user = await get_user_from_db(telegram_id=telegram_id, session=session)
     channel = Channel(
         channel_id=channel_id,

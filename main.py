@@ -40,8 +40,7 @@ async def start():
     )
     sheduler.start()
 
-    dp.message.middleware.register(ThrottlingMiddleware(storage=storage))
-
+    dp.message.middleware(ThrottlingMiddleware(storage=storage))
     dp.message.middleware(LongOperationMiddleware())
     dp.update.middleware(DbConnection(sessionmaker))
 

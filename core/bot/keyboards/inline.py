@@ -2,6 +2,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
 
 
 def get_channels_menu(channels: list) -> InlineKeyboardMarkup:
+    """Keyboard to channels menu"""
     keyboard_builder = InlineKeyboardBuilder()
     for channel in channels:
         keyboard_builder.button(
@@ -13,12 +14,14 @@ def get_channels_menu(channels: list) -> InlineKeyboardMarkup:
 
 
 def get_control_menu(data: str) -> InlineKeyboardMarkup:
+    """Keyboard to delete a channel"""
     keyboard_builder = InlineKeyboardBuilder()
     keyboard_builder.button(text="Удалить", callback_data=f"delete_{data}")
     return keyboard_builder.as_markup()
 
 
 def get_new_video_menu(url: str) -> InlineKeyboardMarkup:
+    """Keyboard to convert updates"""
     keyboard_builder = InlineKeyboardBuilder()
     keyboard_builder.button(text="Конвертировать в MP3", callback_data=f"convert_{url}")
     return keyboard_builder.as_markup()

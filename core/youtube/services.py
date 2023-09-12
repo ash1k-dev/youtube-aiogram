@@ -7,7 +7,7 @@ from pytube import YouTube
 
 
 def get_mp3_from_youtube(url: str) -> FSInputFile:
-    """Скачивание mp3 файла по ссылке Youtube"""
+    """Download mp3 file from Youtube link"""
     yt = YouTube(url)
     video = yt.streams.filter(only_audio=True).first()
     out_file = video.download(output_path=".")
@@ -19,7 +19,7 @@ def get_mp3_from_youtube(url: str) -> FSInputFile:
 
 
 def delete_saved_mp3(path: str) -> None:
-    """Удаление сохраненного mp3 файла"""
+    """Deleting a saved mp3 file"""
     if os.path.isfile(path):
         os.remove(path)
         print("success " + str(datetime.now().time()))
@@ -27,8 +27,8 @@ def delete_saved_mp3(path: str) -> None:
         print("File doesn't exists!")
 
 
-def get_last_video(channel: list):
-    """Проверка обновления в выбранных каналах"""
+def get_last_video(channel: list) -> str:
+    """Getting the latest video on a channel"""
     channel = f"https://www.youtube.com/{channel}"
     videos = scrapetube.get_channel(channel_url=channel, limit=1)
     id_last_video = list(videos)[0]["videoId"]
@@ -36,6 +36,7 @@ def get_last_video(channel: list):
 
 
 def get_video_data(channel: str) -> dict:
+    """Getting data from channel"""
     if channel.startswith("@"):
         channel = f"https://www.youtube.com/{channel}"
     data = {}
@@ -49,6 +50,3 @@ def get_video_data(channel: str) -> dict:
         if part.startswith("@"):
             data["channel_id"] = part
     return data
-
-
-# print(get("https://www.youtube.com/@getatru"))

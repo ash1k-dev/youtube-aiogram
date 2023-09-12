@@ -1,11 +1,13 @@
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, TelegramObject
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from aiogram.types import TelegramObject
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 class DbConnection(BaseMiddleware):
+    """Connecting to the database in handlers"""
+
     def __init__(self, sessionmaker: async_sessionmaker):
         super().__init__()
         self.sessionmaker = sessionmaker

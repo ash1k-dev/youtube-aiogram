@@ -22,7 +22,7 @@ router = Router()
 
 @router.message(Command(commands="start"))
 async def get_start(message: Message, session: AsyncSession):
-    """Greetings"""
+    """Welcome and registration a new user"""
     telegram_id = message.from_user.id
     result = await get_user_from_db(telegram_id=telegram_id, session=session)
     if result is None:
@@ -38,6 +38,7 @@ async def get_start(message: Message, session: AsyncSession):
 
 @router.message(F.text == "Мои каналы")
 async def get_channels(message: Message, session: AsyncSession):
+    """Show user channels"""
     telegram_id = message.from_user.id
     channels = await get_all_channels_from_db(telegram_id=telegram_id, session=session)
     await message.answer(
@@ -48,11 +49,13 @@ async def get_channels(message: Message, session: AsyncSession):
 
 @router.message(F.text == "Помощь")
 async def get_help(message: Message):
+    """Show help text"""
     await message.answer(text=HELP_TEXT)
 
 
 @router.callback_query(F.data.startswith("channel_"))
 async def get_current_channel(callback: CallbackQuery):
+    """Show current channel and keyboard"""
     channel_name = callback.data.split("_", 1)[1]
     await callback.message.answer(
         text=f"{channel_name}", reply_markup=get_control_menu(channel_name)
@@ -62,32 +65,37 @@ async def get_current_channel(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("delete_"))
 async def delete_current_channel(callback: CallbackQuery, session: AsyncSession):
+    """Show current channel and delete keyboard"""
     channel_name = callback.data.split("_", 1)[1]
     await delete_channel(channel_name=channel_name, session=session)
     await callback.message.answer(text=f"Канал '{channel_name}' успешно удален")
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("convert_"))
+@router.callback_query(
+    F.data.startswith("convert_"), flags={"long_operation": "upload_document"}
+)
 async def convert_new_video(callback: CallbackQuery, bot: Bot):
+    """New video conversion"""
     new_video_url = callback.data.split("_", 1)[1]
     try:
         audio = get_mp3_from_youtube(new_video_url)
         await bot.send_audio(callback.from_user.id, audio=audio)
         delete_saved_mp3(audio.__dict__["path"])
     except Exception:
-        await bot.send_message(
-            callback.from_user.id, text="Неверный адрес, попробуйте еще раз!!!!!!!!!!"
-        )
+        await bot.send_message(callback.from_user.id, text="Сбой, попробуйте еще раз!")
     await callback.answer()
 
 
 class AddChannel(StatesGroup):
+    """State to add channel"""
+
     added_channel_name = State()
 
 
 @router.callback_query(F.data == "add_channel")
 async def add_channel(callback: CallbackQuery, state: FSMContext):
+    """Channel adding stage"""
     await callback.message.answer(
         text="Введите адрес канала:",
     )
@@ -97,6 +105,7 @@ async def add_channel(callback: CallbackQuery, state: FSMContext):
 
 @router.message(AddChannel.added_channel_name)
 async def add_channel(message: Message, session: AsyncSession, state: FSMContext):
+    """Adding a channel"""
     try:
         data = get_video_data(message.text)
     except Exception:

@@ -6,13 +6,17 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import HELP_TEXT
-from core.bot.keyboards.inline import get_channels_menu, get_control_menu
+from core.bot.keyboards.inline import (
+    get_channels_menu,
+    get_control_menu,
+    get_go_to_youtube_menu,
+)
 from core.bot.keyboards.reply import get_main_menu
 from core.db.methods.create import create_chanel, create_user
 from core.db.methods.delete import delete_channel
 from core.db.methods.request import (
-    get_all_channels_from_db,
     check_channel_in_db,
+    get_all_channels_from_db,
     get_user_from_db,
 )
 from core.youtube.services import delete_saved_mp3, get_mp3_from_youtube, get_video_data
@@ -53,12 +57,21 @@ async def get_help(message: Message):
     await message.answer(text=HELP_TEXT)
 
 
+@router.message(F.text == "YouTube")
+async def go_to_youtube(message: Message):
+    """Show help text"""
+    await message.answer(
+        text="Перейти на YouTube", reply_markup=get_go_to_youtube_menu()
+    )
+
+
 @router.callback_query(F.data.startswith("channel_"))
 async def get_current_channel(callback: CallbackQuery):
     """Show current channel and keyboard"""
-    channel_name = callback.data.split("_", 1)[1]
+    channel_name = callback.data.split("_")[1]
+    channel_id = callback.data.split("_")[2]
     await callback.message.answer(
-        text=f"{channel_name}", reply_markup=get_control_menu(channel_name)
+        text=f"{channel_name}", reply_markup=get_control_menu(channel_name, channel_id)
     )
     await callback.answer()
 
@@ -68,6 +81,7 @@ async def delete_current_channel(callback: CallbackQuery, session: AsyncSession)
     """Show current channel and delete keyboard"""
     channel_name = callback.data.split("_", 1)[1]
     await delete_channel(channel_name=channel_name, session=session)
+    await callback.message.delete()
     await callback.message.answer(text=f"Канал '{channel_name}' успешно удален")
     await callback.answer()
 

@@ -2,12 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import (
-    relationship,
-    DeclarativeBase,
-    declared_attr,
-)
-
+from sqlalchemy.orm import DeclarativeBase, declared_attr, relationship
 
 from config import DB_URL
 

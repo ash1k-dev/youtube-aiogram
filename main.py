@@ -2,12 +2,11 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-
 from aiogram.fsm.storage.redis import RedisStorage
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from config import DB_URL, TOKEN, REDIS_URL
+from config import DB_URL, REDIS_URL, TOKEN, CHECK_UPDATE_INTERVAL
 from core.bot.handlers import user
 from core.bot.middlewares.db_connection import DbConnection
 from core.bot.middlewares.long_operation import LongOperationMiddleware
@@ -35,7 +34,7 @@ async def start():
     sheduler.add_job(
         check_video_update,
         trigger="interval",
-        seconds=100,
+        seconds=CHECK_UPDATE_INTERVAL,
         kwargs={"bot": bot, "sessionmaker": sessionmaker},
     )
     sheduler.start()

@@ -6,20 +6,16 @@ from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import HELP_TEXT
-from core.bot.keyboards.inline import (
-    get_channels_menu,
-    get_control_menu,
-    get_go_to_youtube_menu,
-)
+from core.bot.keyboards.inline import (get_channels_menu, get_control_menu,
+                                       get_go_to_youtube_menu)
 from core.bot.keyboards.reply import get_main_menu
 from core.db.methods.create import create_chanel, create_user
 from core.db.methods.delete import delete_channel
-from core.db.methods.request import (
-    check_channel_in_db,
-    get_all_channels_from_db,
-    get_user_from_db,
-)
-from core.youtube.services import delete_saved_mp3, get_mp3_from_youtube, get_video_data
+from core.db.methods.request import (check_channel_in_db,
+                                     get_all_channels_from_db,
+                                     get_user_from_db)
+from core.youtube.services import (delete_saved_mp3, get_mp3_from_youtube,
+                                   get_video_data)
 
 router = Router()
 

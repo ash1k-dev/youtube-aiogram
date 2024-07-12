@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.db.models.models import Channel, User
 from core.db.methods.request import get_user_from_db
+from core.db.models.models import Channel, User
 
 
 async def create_user(user_name: str, telegram_id: int, session: AsyncSession) -> None:

@@ -2,7 +2,8 @@ from aiogram import Bot
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from core.bot.keyboards.inline import get_new_video_menu
-from core.db.methods.request import get_all_channels_from_db, get_all_users_from_db
+from core.db.methods.request import (get_all_channels_from_db,
+                                     get_all_users_from_db)
 from core.db.methods.update import update_last_video
 from core.youtube.services import get_last_video
 

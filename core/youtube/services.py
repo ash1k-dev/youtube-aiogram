@@ -3,7 +3,7 @@ from datetime import datetime
 
 import scrapetube
 from aiogram.types import FSInputFile
-from pytube import YouTube
+from pytubefix import YouTube
 
 
 def get_mp3_from_youtube(url: str) -> FSInputFile:
